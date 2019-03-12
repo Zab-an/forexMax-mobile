@@ -1,12 +1,9 @@
-package org.appducegep.mameteo;
+package org.appducegep.forexMax;
 
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.TextView;
 
 import org.w3c.dom.Document;
@@ -24,7 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class PageMeteo extends AppCompatActivity {
+public class PageForex extends AppCompatActivity {
 
     private TextView libelleTitre;
 
@@ -132,8 +129,8 @@ public class PageMeteo extends AppCompatActivity {
             affichageMeteo.append("Humidite : " + humidite + "\n");
 
 
-            MeteoDAO meteoDAO = new MeteoDAO(getApplicationContext());
-            meteoDAO.ajouterMeteo(soleilOuNuage,Integer.parseInt(humidite),vent, temperature);
+            ForexDAO forexDAO = new ForexDAO(getApplicationContext());
+            forexDAO.ajouterMeteo(soleilOuNuage,Integer.parseInt(humidite),vent, temperature);
 
 
         } catch (IOException e) {

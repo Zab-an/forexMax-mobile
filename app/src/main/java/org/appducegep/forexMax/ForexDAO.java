@@ -1,4 +1,4 @@
-package org.appducegep.mameteo;
+package org.appducegep.forexMax;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,11 +11,11 @@ import java.util.Date;
 
 // https://developer.android.com/training/data-storage/sqlite.html
 
-public class MeteoDAO extends SQLiteOpenHelper {
+public class ForexDAO extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Meteo.db";
 
-    public MeteoDAO(Context context) {
+    public ForexDAO(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -30,14 +30,14 @@ public class MeteoDAO extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        Log.d("BASEDEDONNEES","MeteoDAO.create()");
+        Log.d("BASEDEDONNEES","ForexDAO.create()");
         db.execSQL(SQL_CREATION_TABLE_3);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int avant, int apres) {
-        Log.d("BASEDEDONNEES","MeteoDAO.onUpgrade() de " + avant + " a " + apres);
+        Log.d("BASEDEDONNEES","ForexDAO.onUpgrade() de " + avant + " a " + apres);
 
         if(avant == 1 && apres >= 2) {
             db.execSQL(SQL_MISEAJOUR_TABLE_1_A_2_A);
@@ -49,7 +49,7 @@ public class MeteoDAO extends SQLiteOpenHelper {
     }
 
     public void onDowngrade(SQLiteDatabase db, int avant, int apres) {
-        Log.d("BASEDEDONNEES","MeteoDAO.onDowngrade() de" + avant + " a " + apres);
+        Log.d("BASEDEDONNEES","ForexDAO.onDowngrade() de" + avant + " a " + apres);
 //        String SQL_MISEAJOUR_TABLE_A = "alter table meteo drop column vent ";
 //        db.execSQL(SQL_MISEAJOUR_TABLE_A);
 //        String SQL_MISEAJOUR_TABLE_B = "alter table meteo drop column vent ";
