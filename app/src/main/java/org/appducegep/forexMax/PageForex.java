@@ -15,7 +15,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.nio.Buffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.PatternSyntaxException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,22 +54,19 @@ public class PageForex extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_meteo);
-        if (android.os.Build.VERSION.SDK_INT > 9)
-        {
-            StrictMode.ThreadPolicy policy = new
-                    StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         libelleTitre = (TextView) findViewById(R.id.message);
 //        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
 //        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        String CLE = "e55ed0739fea4e499a3185141192202";
+        String CLE = "0ee79cbc173226487f997b7aa2c4867d";
         String xml = "";
 
         try {
-            URL url = new URL("https://api.apixu.com/v1/current.xml?key="+CLE+"&q=Matane");
+            URL url = new URL("http://data.fixer.io/api/latest?access_key="+CLE+"&base=EUR&symbols=USD");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
@@ -86,60 +88,77 @@ public class PageForex extends AppCompatActivity {
         System.out.println(xml);
 
         try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = null;
-            docBuilder = builderFactory.newDocumentBuilder();
-            Document doc = null;
-            doc = docBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
-            Element elementHumidite = (Element)doc.getElementsByTagName("humidity").item(0);
-            String humidite = elementHumidite.getTextContent();
-            Element elementVentForce = (Element)doc.getElementsByTagName("wind_kph").item(0);
-            String ventForce = elementVentForce.getTextContent();
-            Element elementVentDirection = (Element)doc.getElementsByTagName("wind_dir").item(0);
-            String ventDirection = elementVentDirection.getTextContent();
-            Element elementCondition = (Element)doc.getElementsByTagName("condition").item(0);
-            Element elementSoleilOuNuage = (Element)elementCondition.getElementsByTagName("text").item(0);
-            String soleilOuNuage = elementSoleilOuNuage.getTextContent();
-            if(soleilOuNuage.compareTo("Sunny") == 0) soleilOuNuage = "Ensoleillé";
-            else soleilOuNuage = "Nuageux";
-            Element elementLieu = (Element)doc.getElementsByTagName("location").item(0);
-            Element elementVille =(Element)elementLieu.getElementsByTagName("name").item(0);
-            Element elementTemperature =(Element)doc.getElementsByTagName("temp_c").item(0);
-            String ville = elementVille.getTextContent();
-            String vent = ventDirection +" "+ ventForce;
-            float temperature = Float.parseFloat(elementTemperature.getTextContent());
+//            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder docBuilder = null;
+//            docBuilder = builderFactory.newDocumentBuilder();
+//            Document doc = null;
+//            doc = docBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
+
+//            Element elementHumidite = (Element)doc.getElementsByTagName("humidity").item(0);
+//            String humidite = elementHumidite.getTextContent();
+//            Element elementVentForce = (Element)doc.getElementsByTagName("wind_kph").item(0);
+//            String ventForce = elementVentForce.getTextContent();
+//            Element elementVentDirection = (Element)doc.getElementsByTagName("wind_dir").item(0);
+//            String ventDirection = elementVentDirection.getTextContent();
+//            Element elementCondition = (Element)doc.getElementsByTagName("condition").item(0);
+//            Element elementSoleilOuNuage = (Element)elementCondition.getElementsByTagName("text").item(0);
+//            String soleilOuNuage = elementSoleilOuNuage.getTextContent();
+//            if(soleilOuNuage.compareTo("Sunny") == 0) soleilOuNuage = "Ensoleillé";
+//            else soleilOuNuage = "Nuageux";
+//            Element elementLieu = (Element)doc.getElementsByTagName("location").item(0);
+//            Element elementVille =(Element)elementLieu.getElementsByTagName("name").item(0);
+//            Element elementTemperature =(Element)doc.getElementsByTagName("temp_c").item(0);
+//            String ville = elementVille.getTextContent();
+//            String vent = ventDirection +" "+ ventForce;
+//            float temperature = Float.parseFloat(elementTemperature.getTextContent());
+            String convert = xml.toString();
+            convert = convert.replaceAll("[\\{\\}\"]", "");
+            System.out.println(convert+" CONVERT");
+            Map<String,String> myMap = new HashMap<>();
+            String[] pairs = convert.split(",");
+            for (int i=0;i<pairs.length;i++) {
+                String pair = pairs[i];
+                String[] keyValue = pair.split(":");
+                if(keyValue.length==3){
+                    myMap.put("value",keyValue[2]);
+                }
+                myMap.put(keyValue[0], keyValue[1]);
+            }
+            System.out.println(myMap);
+            String elementPaire1 = myMap.get("base");
+            String elementPaire2 = myMap.get("rates");
+            String rate = myMap.get("value");
+            System.out.println("elementPaire2");
+            String paire = elementPaire1+"/"+elementPaire2;
+            float valeur = Float.parseFloat(rate);
 
 
             System.out.println("\n//////////////////////");
-            System.out.println("Ville = " + ville);
-            System.out.println("Meteo = " + soleilOuNuage);
-            System.out.println("Vent : " + vent + "\n");
-            System.out.println("Humidite = " + humidite);
-            System.out.println("Température = " + temperature);
+            System.out.println("Paire = " + paire);
+            System.out.println("Valeur = " + valeur);
             System.out.println("//////////////////////");
 
             TextView affichageTitre = (TextView) this.findViewById(R.id.titre_page_meteo);
-            affichageTitre.setText("Météo de " + ville);
+            String titre = "Courbe de " + paire;
+            affichageTitre.setText(titre);
 
-            TextView affichageMeteo = (TextView)this.findViewById(R.id.meteo);
-            affichageMeteo.setText(soleilOuNuage + "\n");
-            affichageMeteo.append("\n\n\n\n\n");
-            affichageMeteo.append("Température : " + temperature + "\n");
-            affichageMeteo.append("Vent : " + vent + "\n");
-            affichageMeteo.append("Humidite : " + humidite + "\n");
+            TextView affichageForex = (TextView)this.findViewById(R.id.meteo);
+            affichageForex.append("\n\n\n\n\n");
+            affichageForex.append("valeur : " + valeur + "\n");
 
 
             ForexDAO forexDAO = new ForexDAO(getApplicationContext());
-            forexDAO.ajouterMeteo(soleilOuNuage,Integer.parseInt(humidite),vent, temperature);
+            forexDAO.ajouterForex(paire,valeur);
 
 
-        } catch (IOException e) {
+        } catch (PatternSyntaxException e) {
             e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
-         catch (ParserConfigurationException e) {
-            e.printStackTrace();
+//        } catch (SAXException e) {
+//            e.printStackTrace();
+//        }
+//         catch (ParserConfigurationException e) {
+//            e.printStackTrace();
         }
 
     }
