@@ -140,12 +140,12 @@ public class PageForex extends AppCompatActivity {
             System.out.println("//////////////////////");
 
             TextView affichageTitre = (TextView) this.findViewById(R.id.titre_page_meteo);
-            String titre = "Courbe de " + paire;
+            String titre = "Valeur de " + paire;
             affichageTitre.setText(titre);
 
             TextView affichageForex = (TextView)this.findViewById(R.id.meteo);
             affichageForex.append("\n\n\n\n\n");
-            affichageForex.append("valeur : " + valeur + "\n");
+            affichageForex.append("Coté à : " + valeur + "\n");
 
 
             ForexDAO forexDAO = new ForexDAO(getApplicationContext());
